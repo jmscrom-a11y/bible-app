@@ -71,8 +71,11 @@ body {
 /* drawer (TOC) */
 .hidden { display: none !important; }
 .drawer, .sheet { position: fixed; inset: 0; z-index: 40; }
-.drawer-scrim, .sheet-scrim, .menu-scrim { position: absolute; inset: 0; background: rgba(0,0,0,.4); }
+/* scrim sits BELOW the panel; without z-index the later-in-DOM scrim would
+   paint over the panel and swallow every tap (see 형광펜 bug). */
+.drawer-scrim, .sheet-scrim, .menu-scrim { position: absolute; inset: 0; background: rgba(0,0,0,.4); z-index: 1; }
 .drawer-panel {
+  z-index: 2;
   position: absolute; top: 0; left: 0; bottom: 0; width: min(88%, 360px);
   background: var(--panel); display: flex; flex-direction: column;
   box-shadow: 2px 0 16px rgba(0,0,0,.25); animation: slideIn .18s ease;
@@ -115,6 +118,7 @@ body {
 
 /* verse action sheet */
 .sheet-panel {
+  z-index: 2;
   position: absolute; left: 0; right: 0; bottom: 0; background: var(--sheet-bg);
   border-radius: 1rem 1rem 0 0; padding: 1rem 1rem calc(1rem + env(safe-area-inset-bottom));
   box-shadow: 0 -4px 16px rgba(0,0,0,.25); animation: sheetUp .18s ease;
