@@ -1,0 +1,17 @@
+{
+  "name": "성경",
+  "short_name": "성경",
+  "description": "개역성경(한글) · KJV(영어) 공공영역 성경 리더 — 검색, 형광펜, 메모, 읽기 플랜, 음성",
+  "lang": "ko",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#1f2937",
+  "icons": [
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" },
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
