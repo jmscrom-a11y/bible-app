@@ -209,15 +209,34 @@ function saveNote() {
   store.set("notes", state.notes);
   closeAll(); render(); toast(txt ? "메모 저장" : "메모 삭제");
 }
-async function copyVerse() {
-  const k = state.sheetKey; if (!k) return;
+// Resolve the sheet's current verse to {ref, text} in the active translation.
+async function sheetVerse() {
+  const k = state.sheetKey; if (!k) return null;
   const [nr, ch, v] = k.split(":").map(Number);
   const trans = state.trans === "en" ? "kjv" : "korean";
   const book = await loadBook(trans, nr);
   const vt = chapterVerses(book, ch).find((x) => x.v === v);
-  const text = `${bookName(nr)} ${ch}:${v} ${vt ? vt.t : ""}`;
-  try { await navigator.clipboard.writeText(text); toast("복사됨"); }
+  return { ref: `${bookName(nr)} ${ch}:${v}`, text: vt ? vt.t : "" };
+}
+async function copyVerse() {
+  const r = await sheetVerse(); if (!r) return;
+  try { await navigator.clipboard.writeText(`${r.ref} ${r.text}`); toast("복사됨"); }
   catch { toast("복사 실패"); }
+  closeAll();
+}
+// Open the verse on the web (Google) or an internet-searching AI (Perplexity),
+// each in a new tab with the reference + verse text as the query. No backend /
+// API key needed — just a prefilled URL.
+async function webSearchVerse() {
+  const r = await sheetVerse(); if (!r) return;
+  const q = encodeURIComponent(`${r.ref} ${r.text}`);
+  window.open(`https://www.google.com/search?q=${q}`, "_blank", "noopener");
+  closeAll();
+}
+async function aiSearchVerse() {
+  const r = await sheetVerse(); if (!r) return;
+  const prompt = `${r.ref} "${r.text}" — 이 성경 구절의 의미와 배경을 설명해줘.`;
+  window.open(`https://www.perplexity.ai/search?q=${encodeURIComponent(prompt)}`, "_blank", "noopener");
   closeAll();
 }
 
@@ -469,6 +488,8 @@ function wireUI() {
   $("#act-note").onclick = () => { $("#note-input").classList.remove("hidden"); $("#note-save-row").classList.remove("hidden"); $("#note-input").focus(); };
   $("#note-save").onclick = saveNote;
   $("#act-copy").onclick = copyVerse;
+  $("#act-web").onclick = webSearchVerse;
+  $("#act-ai").onclick = aiSearchVerse;
 
   // audio
   $("#btn-audio").onclick = speakChapter;
