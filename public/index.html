@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#1f2937" />
+  <title>성경</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- top bar -->
+  <header class="topbar">
+    <button id="btn-toc" class="icon-btn" title="목차" aria-label="목차">&#9776;</button>
+    <button id="btn-ref" class="ref-btn" title="책/장 선택">
+      <span id="cur-ref">성경</span> <span class="caret">&#9662;</span>
+    </button>
+    <div class="spacer"></div>
+    <button id="btn-audio" class="icon-btn" title="소리내어 읽기" aria-label="오디오">&#9654;</button>
+    <button id="btn-search" class="icon-btn" title="검색" aria-label="검색">&#128269;</button>
+    <button id="btn-trans" class="text-btn" title="번역본">한</button>
+    <button id="btn-menu" class="icon-btn" title="메뉴" aria-label="메뉴">&#8942;</button>
+  </header>
+
+  <!-- reader -->
+  <main id="reader" class="reader" tabindex="-1">
+    <div id="verses" class="verses"></div>
+    <nav class="chapter-nav">
+      <button id="btn-prev" class="nav-btn">&#8249; 이전</button>
+      <button id="btn-next" class="nav-btn">다음 &#8250;</button>
+    </nav>
+  </main>
+
+  <!-- TOC drawer -->
+  <div id="drawer" class="drawer hidden" role="dialog" aria-label="목차">
+    <div class="drawer-panel">
+      <div class="drawer-head">
+        <strong>목차</strong>
+        <button id="toc-close" class="icon-btn">&times;</button>
+      </div>
+      <div class="toc-tabs">
+        <button class="toc-tab active" data-t="OT">구약</button>
+        <button class="toc-tab" data-t="NT">신약</button>
+      </div>
+      <div id="book-grid" class="book-grid"></div>
+      <div id="chapter-grid" class="chapter-grid hidden"></div>
+    </div>
+    <div class="drawer-scrim" data-close></div>
+  </div>
+
+  <!-- search panel -->
+  <div id="search-panel" class="panel hidden" role="dialog" aria-label="검색">
+    <div class="panel-head">
+      <input id="search-input" type="search" placeholder="단어/구절 검색…" autocomplete="off" />
+      <button id="search-close" class="icon-btn">&times;</button>
+    </div>
+    <div id="search-status" class="search-status"></div>
+    <div id="search-results" class="search-results"></div>
+  </div>
+
+  <!-- verse action sheet -->
+  <div id="sheet" class="sheet hidden" role="dialog" aria-label="구절 작업">
+    <div class="sheet-panel">
+      <div id="sheet-ref" class="sheet-ref"></div>
+      <div class="hl-row">
+        <button class="hl-swatch" data-color="yellow" style="--c:#fde68a"></button>
+        <button class="hl-swatch" data-color="green" style="--c:#bbf7d0"></button>
+        <button class="hl-swatch" data-color="blue" style="--c:#bfdbfe"></button>
+        <button class="hl-swatch" data-color="pink" style="--c:#fbcfe8"></button>
+        <button class="hl-swatch hl-none" data-color="none" title="지우기">&times;</button>
+      </div>
+      <div class="sheet-actions">
+        <button id="act-bookmark" class="sheet-act">&#9734; 북마크</button>
+        <button id="act-note" class="sheet-act">&#9998; 메모</button>
+        <button id="act-copy" class="sheet-act">&#128203; 복사</button>
+      </div>
+      <textarea id="note-input" class="note-input hidden" placeholder="메모를 입력하세요…"></textarea>
+      <div id="note-save-row" class="hidden"><button id="note-save" class="primary-btn">메모 저장</button></div>
+    </div>
+    <div class="sheet-scrim" data-close></div>
+  </div>
+
+  <!-- generic list panel (bookmarks / plan) -->
+  <div id="list-panel" class="panel hidden" role="dialog">
+    <div class="panel-head">
+      <strong id="list-title"></strong>
+      <button id="list-close" class="icon-btn">&times;</button>
+    </div>
+    <div id="list-body" class="list-body"></div>
+  </div>
+
+  <!-- menu -->
+  <div id="menu" class="menu hidden">
+    <button data-menu="bookmarks">&#9733; 북마크 / 형광펜 / 메모</button>
+    <button data-menu="plan">&#128197; 읽기 플랜 (1년 통독)</button>
+    <button data-menu="dark">&#127769; 다크 모드</button>
+    <button data-menu="font-up">&#65291; 글자 크게</button>
+    <button data-menu="font-down">&#65293; 글자 작게</button>
+  </div>
+  <div id="menu-scrim" class="menu-scrim hidden" data-close></div>
+
+  <script src="js/app.js" type="module"></script>
+</body>
+</html>
