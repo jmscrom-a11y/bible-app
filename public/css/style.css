@@ -140,6 +140,7 @@ body {
 .menu { position: fixed; top: 3rem; right: .5rem; z-index: 60; background: var(--panel); border: 1px solid var(--line); border-radius: .7rem; box-shadow: 0 8px 24px rgba(0,0,0,.2); overflow: hidden; min-width: 230px; }
 .menu button { display: block; width: 100%; text-align: left; padding: .8rem 1rem; border: none; background: transparent; color: var(--fg); font: inherit; cursor: pointer; }
 .menu button:active { background: var(--line); }
+.menu-ver { padding: .5rem 1rem; color: var(--muted); font-size: .75rem; border-top: 1px solid var(--line); }
 .menu-scrim { position: fixed; inset: 0; z-index: 55; }
 
 .toast { position: fixed; bottom: calc(1.5rem + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); background: #111827; color: #fff; padding: .6rem 1rem; border-radius: .6rem; z-index: 80; opacity: 0; transition: opacity .2s; font-size: .9rem; }

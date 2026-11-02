@@ -1,6 +1,11 @@
-// Service worker: app-shell precache + cache-first for everything under scope
-// (incl. data/*.json) so the whole Bible works offline once visited.
-const VERSION = "bible-v6";
+// Service worker.
+// Strategy:
+//   - CODE / app shell (html, css, js, manifest): NETWORK-FIRST, fall back to
+//     cache when offline. So a new deploy shows up immediately online — no more
+//     "stale app" after an update — while still working offline.
+//   - DATA (data/*.json) + icons: CACHE-FIRST. These never change per version,
+//     so cache them hard for instant, fully-offline reading.
+const VERSION = "bible-v7";
 const SHELL = [
   "./", "./index.html", "./css/style.css", "./js/app.js",
   "./manifest.webmanifest", "./icons/icon.svg", "./data/books.json",
@@ -18,20 +23,34 @@ self.addEventListener("activate", (e) => {
   );
 });
 
+function isStaticData(url) {
+  return url.pathname.includes("/data/") || url.pathname.includes("/icons/");
+}
+
 self.addEventListener("fetch", (e) => {
   const { request } = e;
   if (request.method !== "GET") return;
+  const url = new URL(request.url);
+  if (url.origin !== self.location.origin) return;
+
+  if (isStaticData(url)) {
+    // cache-first
+    e.respondWith(
+      caches.match(request).then((hit) =>
+        hit || fetch(request).then((res) => {
+          if (res.ok) { const c = res.clone(); caches.open(VERSION).then((x) => x.put(request, c)); }
+          return res;
+        })
+      )
+    );
+    return;
+  }
+
+  // network-first for code / shell
   e.respondWith(
-    caches.match(request).then((hit) => {
-      if (hit) return hit;
-      return fetch(request).then((res) => {
-        // Cache same-origin successful responses (app shell + lazily-loaded book data).
-        if (res.ok && new URL(request.url).origin === self.location.origin) {
-          const copy = res.clone();
-          caches.open(VERSION).then((c) => c.put(request, copy));
-        }
-        return res;
-      }).catch(() => hit);
-    })
+    fetch(request).then((res) => {
+      if (res.ok) { const c = res.clone(); caches.open(VERSION).then((x) => x.put(request, c)); }
+      return res;
+    }).catch(() => caches.match(request).then((hit) => hit || caches.match("./index.html")))
   );
 });

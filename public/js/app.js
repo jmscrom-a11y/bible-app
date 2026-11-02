@@ -1,6 +1,7 @@
 // 성경 웹앱 — reader + search + highlights/bookmarks/notes + reading plan + audio.
 // No framework, no build step. Data is pre-split per book under data/<trans>/<nr>.json.
 
+const BUILD = "v7";
 const DATA = "data";
 const TRANS_ORDER = ["ko", "en", "parallel"];
 const TRANS_FILE = { ko: "korean", en: "kjv" };       // parallel uses both
@@ -38,6 +39,7 @@ async function boot() {
   applyFont();
   state.books = await (await fetch(`${DATA}/books.json`)).json();
   wireUI();
+  const ver = $("#menu-ver"); if (ver) ver.textContent = `build ${BUILD}`;
   updateWakeLabel();
   acquireWakeLock();
   await render();
