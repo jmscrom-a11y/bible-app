@@ -1,6 +1,6 @@
 // Service worker: app-shell precache + cache-first for everything under scope
 // (incl. data/*.json) so the whole Bible works offline once visited.
-const VERSION = "bible-v4";
+const VERSION = "bible-v5";
 const SHELL = [
   "./", "./index.html", "./css/style.css", "./js/app.js",
   "./manifest.webmanifest", "./icons/icon.svg", "./data/books.json",

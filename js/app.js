@@ -236,7 +236,7 @@ async function webSearchVerse() {
 async function aiSearchVerse() {
   const r = await sheetVerse(); if (!r) return;
   const prompt = `${r.ref} "${r.text}" — 이 성경 구절의 의미와 배경을 설명해줘.`;
-  window.open(`https://www.perplexity.ai/search?q=${encodeURIComponent(prompt)}`, "_blank", "noopener");
+  window.open(`https://chatgpt.com/?q=${encodeURIComponent(prompt)}`, "_blank", "noopener");
   closeAll();
 }
 
