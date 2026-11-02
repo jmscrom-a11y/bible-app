@@ -22,6 +22,7 @@ const state = {
   notes: store.get("notes", {}),             // "nr:ch:v" -> text
   planDone: store.get("planDone", {}),       // dayIndex -> true
   fontIdx: store.get("fontIdx", 3),
+  keepAwake: store.get("keepAwake", true),
   sheetKey: null,
 };
 const bookCache = new Map();   // "trans/nr" -> book json
@@ -37,6 +38,8 @@ async function boot() {
   applyFont();
   state.books = await (await fetch(`${DATA}/books.json`)).json();
   wireUI();
+  updateWakeLabel();
+  acquireWakeLock();
   await render();
   registerSW();
 }
@@ -384,6 +387,36 @@ function stopAudio() {
   document.querySelectorAll("#verses .verse.speaking").forEach((n) => n.classList.remove("speaking"));
 }
 
+// ── screen wake lock (화면 꺼짐 방지) ─────────────────────────────────────────
+let wakeLock = null;
+async function acquireWakeLock() {
+  if (!state.keepAwake || !("wakeLock" in navigator)) return;
+  try {
+    wakeLock = await navigator.wakeLock.request("screen");
+    // The OS auto-releases the lock when the tab is hidden; re-acquire on
+    // return (handled by the visibilitychange listener below).
+    wakeLock.addEventListener("release", () => { wakeLock = null; });
+  } catch { wakeLock = null; }
+}
+async function releaseWakeLock() {
+  try { await wakeLock?.release(); } catch {}
+  wakeLock = null;
+}
+function updateWakeLabel() {
+  const b = $("#menu-wake");
+  if (b) b.textContent = (state.keepAwake ? "☀ 화면 켜둠: 켜짐" : "☀ 화면 켜둠: 꺼짐");
+}
+async function toggleKeepAwake() {
+  state.keepAwake = !state.keepAwake;
+  store.set("keepAwake", state.keepAwake);
+  updateWakeLabel();
+  if (state.keepAwake) await acquireWakeLock(); else await releaseWakeLock();
+  toast(state.keepAwake ? "화면이 꺼지지 않아요" : "화면 켜둠 해제");
+}
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") acquireWakeLock();
+});
+
 // ── theme / font ────────────────────────────────────────────────────────────
 function applyTheme(t) { document.documentElement.dataset.theme = t === "dark" ? "dark" : ""; store.set("theme", t); }
 function toggleTheme() { applyTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"); }
@@ -448,6 +481,7 @@ function wireUI() {
     $("#menu").classList.add("hidden"); $("#menu-scrim").classList.add("hidden");
     if (a === "bookmarks") showSaved();
     else if (a === "plan") showPlan();
+    else if (a === "wake") toggleKeepAwake();
     else if (a === "dark") toggleTheme();
     else if (a === "font-up") { state.fontIdx++; applyFont(); render(); }
     else if (a === "font-down") { state.fontIdx--; applyFont(); render(); }
